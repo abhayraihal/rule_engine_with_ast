@@ -155,39 +155,23 @@ function combineResults(prevResult, currentResult, operator) {
     }
 }
 
-function evaluateRule(AST, data) {
-    if (AST.type === 'Compound') {
-        let result = null;
-        let currentOperator = null;
+function evaluateRule(node, data) {
+    if (!node) return false;
 
-        for (const node of AST.body) {
-            if (node.type === 'Compound') {
-                // Recursively evaluate the inner compound
-                const innerResult = evaluateRule(node, data);
-                result = combineResults(result, innerResult, currentOperator);
-            } else if (node.type === 'Identifier') {
-                // Update current operator
-                currentOperator = node.name;
-            } else if (node.type === 'SequenceExpression') {
-                // Evaluate expressions in the sequence
-                let sequenceResult = null;
-                for (const expression of node.expressions) {
-                    const exprResult = evaluateExpression(expression, data);
-                    sequenceResult = combineResults(sequenceResult, exprResult, currentOperator);
-                }
-                result = combineResults(result, sequenceResult, currentOperator);
-            } else if (node.type === 'CallExpression') {
-                // Evaluate the call expression
-                const argumentsResult = node.arguments.map(arg => evaluateExpression(arg, data));
-                const callResult = evaluateCall(node.callee.name, argumentsResult);
-                result = combineResults(result, callResult, currentOperator);
-            }
-        }
-
-        return result !== null ? result : false; // Default to false if no result
+    switch (node.operator) {
+        case '&&':
+            return evaluateRule(node.left, data) && evaluateRule(node.right, data);
+        case '||':
+            return evaluateRule(node.left, data) || evaluateRule(node.right, data);
+        case '>':
+            return data[node.name] > node.value;
+        case '<':
+            return data[node.name] < node.value;
+        case '===':
+            return data[node.name] === node.value;
+        default:
+            throw new Error(`Unknown operator: ${node.operator}`);
     }
-    
-    return false; // Default case
 }
 
 // async function saveRuleToFirebase(ruleId, ruleString, AST) {
@@ -232,9 +216,9 @@ app.post('/combine-rules', (req, res) => {
 });
 
 app.post('/evaluate-rule', (req, res) => {
-    const { AST, data } = req.body;
+    const { ast, data } = req.body;
     try {
-        const result = evaluateRule(AST, data);
+        const result = evaluateRule(ast, data);
         res.json({ result });
     } catch (error) {
         res.status(400).json({ message: 'Error evaluating rule', error });
