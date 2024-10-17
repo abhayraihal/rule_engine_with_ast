@@ -22,67 +22,78 @@ class Node {
     }
 }
 
+// Simplify the AST
+function simplifyAST(node) {
+    if (node.type === 'BinaryExpression') {
+        if (node.left.type === 'BinaryExpression' || node.right.type === 'BinaryExpression') {
+            // Recur for non-leaf nodes
+            return {
+                operator: node.operator,
+                left: simplifyAST(node.left),
+                right: simplifyAST(node.right)
+            };
+        } else {
+            // Leaf nodes: only return the condition
+            return {
+                operator: node.operator,
+                name: node.left.name,
+                value: node.right.value
+            };
+        }
+    }
+    return node;  // Return unchanged if not BinaryExpression
+}
+
 function createRule(ruleString) {
     // Replace '=' with '===' for equality checks
-    const query = ruleString.replace(/=/g, '===');
+    const query = ruleString
+        .replace(/=/g, '===')
+        .replace(/AND/g, '&&')
+        .replace(/OR/g, '||');
 
     // Parse the query
     const ast = jsep(query);
-    
-    return ast;
+
+    return simplifyAST(ast);
 }
 
 function parseRule(rule) {
     // Use JSEP to parse the rule string into an AST
-    rule = rule.replace(/=/g, '===');
-    return jsep(rule);
-}
-
-function countOperators(asts) {
-    const counts = { AND: 0, OR: 0 };
-    asts.forEach(ast => {
-        // Traverse the AST to count operators
-        traverseAST(ast, counts);
-    });
-    return counts;
-}
-
-function traverseAST(ast, counts) {
-    if (ast.type === 'CallExpression' && counts[ast.callee.name] !== undefined) {
-        counts[ast.callee.name]++;
-    }
-    if (ast.body) {
-        ast.body.forEach(node => traverseAST(node, counts));
-    }
-    if (ast.arguments) {
-        ast.arguments.forEach(node => traverseAST(node, counts));
-    }
+    rule = rule
+        .replace(/=/g, '===')
+        .replace(/AND/g, '&&')
+        .replace(/OR/g, '||');
+    return simplifyAST(jsep(rule));
 }
 
 function combineASTs(asts) {
     if (asts.length === 0) return null;
-
-    // const operatorCounts = countOperators(asts);
-    // const mainOperator = operatorCounts.AND >= operatorCounts.OR ? 'AND' : 'OR';
-
-    return combineWithOperator(asts, 'OR');
+    return combineWithOperator(asts, '&&');
 }
 
 function combineWithOperator(asts, operator) {
-    const combinedAST = {
-        type: "Compound",
-        body: [],
-    };
+    if (asts.length === 0) return null;
 
-    asts.forEach(ast => {
-        combinedAST.body.push(ast);
-        combinedAST.body.push({ type: "Identifier", name: operator });
-    });
+    const combinedASTs = [...asts]; // Create a copy of the original array
 
-    // Remove the last operator as it's not needed
-    combinedAST.body.pop();
+    while (combinedASTs.length > 1) {
+        // Pick the first two ASTs
+        const left = combinedASTs.shift(); // Remove the first AST
+        const right = combinedASTs.shift(); // Remove the second AST
 
-    return combinedAST;
+        // Merge them into a new BinaryExpression
+        const mergedAST = {
+            operator: operator,
+            left: left,
+            right: right,
+        };
+
+        // Push the merged AST back into the array
+        combinedASTs.push(mergedAST);
+    }
+
+    // Return the final combined AST
+    return combinedASTs[0];
 }
 
 function combineRules(ruleStrings) {
@@ -90,7 +101,13 @@ function combineRules(ruleStrings) {
     return combineASTs(asts);
 }
 
-
+function parseRule(rule) {
+    rule = rule
+        .replace(/=/g, '===')
+        .replace(/AND/g, '&&')
+        .replace(/OR/g, '||');
+    return simplifyAST(jsep(rule));
+}
 
 function evaluateExpression(expr, data) {
     if (expr.type === 'Identifier') {
@@ -207,8 +224,8 @@ app.post('/combine-rules', (req, res) => {
     const { rules } = req.body;
     // console.log("Input request: ", rules)
     try {
-        const combinedAST = combineRules(rules);
-        res.json({ combinedAST });
+        const ast = combineRules(rules);
+        res.json({ ast });
     } catch (error) {
         res.status(400).json({ message: 'Invalid rules', error });
     }
