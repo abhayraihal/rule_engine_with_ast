@@ -20,7 +20,7 @@ const CombineRules = () => {
 
         try {
             const response = await axios.post('http://localhost:5000/combine-rules', { "rules" : rules });
-            setCombinedAST(response.data.combinedAST);
+            setCombinedAST(response.data.ast);
         } catch (error) {
             setError('Failed to combine rules. Please check your input.');
         }

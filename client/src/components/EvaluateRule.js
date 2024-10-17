@@ -12,7 +12,7 @@ const EvaluateRule = () => {
         setError(null);
 
         try {
-            const response = await axios.post('http://localhost:5000/evaluate-rule', { "AST": JSON.parse(ast), "data": JSON.parse(data) });
+            const response = await axios.post('http://localhost:5000/evaluate-rule', { "ast": JSON.parse(ast), "data": JSON.parse(data) });
             setResult(response.data.result);
         } catch (error) {
             setError('Failed to evaluate rule. Please check your input.');
