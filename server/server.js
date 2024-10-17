@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const admin = require('firebase-admin');
 const jsep = require('jsep');
+const cors = require('cors');
 // const serviceAccount = require('./firebaseServiceAccountKey.json');
 
 // Initialize Firebase Admin SDK
@@ -188,6 +189,7 @@ function evaluateRule(AST, data) {
 
 const app = express();
 
+app.use(cors());
 app.use(bodyParser.json()); // Parse JSON request bodies
 
 app.post('/create-rule', (req, res) => {
@@ -203,6 +205,7 @@ app.post('/create-rule', (req, res) => {
 
 app.post('/combine-rules', (req, res) => {
     const { rules } = req.body;
+    // console.log("Input request: ", rules)
     try {
         const combinedAST = combineRules(rules);
         res.json({ combinedAST });
@@ -220,9 +223,6 @@ app.post('/evaluate-rule', (req, res) => {
         res.status(400).json({ message: 'Error evaluating rule', error });
     }
 });
-
-
-
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
