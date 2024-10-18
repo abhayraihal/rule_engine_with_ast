@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Input } from '../input';
+import { Button } from '../button';
 
 const CombineRules = () => {
     const [rules, setRules] = useState(['']);
@@ -13,11 +15,10 @@ const CombineRules = () => {
     };
 
     const addRuleInput = () => setRules([...rules, '']);
-    
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
-
         try {
             const response = await axios.post('http://localhost:5000/combine-rules', { "rules" : rules });
             setCombinedAST(response.data.ast);
@@ -31,7 +32,7 @@ const CombineRules = () => {
             <h2>Combine Rules</h2>
             <form onSubmit={handleSubmit}>
                 {rules.map((rule, index) => (
-                    <input
+                    <Input
                         key={index}
                         type="text"
                         placeholder={`Rule ${index + 1}`}
@@ -40,18 +41,16 @@ const CombineRules = () => {
                         required
                     />
                 ))}
-                <button type="button" onClick={addRuleInput}>Add Another Rule</button>
-                <button type="submit">Combine Rules</button>
+                <Button type="button" onClick={addRuleInput}>Add Another Rule</Button>
+                <Button type="submit">Combine Rules</Button>
             </form>
-
             {combinedAST && (
                 <div>
                     <h3>Combined AST Representation</h3>
                     <pre>{JSON.stringify(combinedAST, null, 2)}</pre>
                 </div>
             )}
-
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {error && <p className="text-red-500">{error}</p>}
         </div>
     );
 };

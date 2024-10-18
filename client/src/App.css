@@ -1,39 +1,38 @@
-.App {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  text-align: left;
+#root {
 }
 
-h1 {
-  text-align: center;
-  margin-bottom: 40px;
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
-form {
-  display: flex;
-  flex-direction: column;
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-input, textarea {
-  margin-bottom: 15px;
-  padding: 10px;
-  font-size: 16px;
-  width: 100%;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
 }
 
-button {
-  padding: 10px;
-  font-size: 16px;
-  cursor: pointer;
-  border: none;
-  background-color: #007BFF;
-  color: white;
-  border-radius: 5px;
+.card {
+  padding: 2em;
 }
 
-button:hover {
-  background-color: #0056b3;
+.read-the-docs {
+  color: #888;
 }

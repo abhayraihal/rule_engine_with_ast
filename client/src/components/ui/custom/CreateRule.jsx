@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Input } from '../input';
+import { Button } from '../button';
 
 const CreateRule = () => {
     const [ruleString, setRuleString] = useState('');
@@ -9,7 +11,6 @@ const CreateRule = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
-
         try {
             const response = await axios.post('http://localhost:5000/create-rule', { "rule" : ruleString });
             setAST(response.data.ast);
@@ -22,24 +23,22 @@ const CreateRule = () => {
         <div>
             <h2>Create Rule</h2>
             <form onSubmit={handleSubmit}>
-                <input 
-                    type="text" 
-                    placeholder="Enter rule (e.g., age > 30 AND department = 'Sales')" 
-                    value={ruleString} 
-                    onChange={(e) => setRuleString(e.target.value)} 
-                    required 
+                <Input
+                    type="text"
+                    placeholder="Enter rule (e.g., age > 30 AND department = 'Sales')"
+                    value={ruleString}
+                    onChange={(e) => setRuleString(e.target.value)}
+                    required
                 />
-                <button type="submit">Create Rule</button>
+                <Button type="submit">Create Rule</Button>
             </form>
-
             {ast && (
                 <div>
                     <h3>AST Representation</h3>
                     <pre>{JSON.stringify(ast, null, 2)}</pre>
                 </div>
             )}
-
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {error && <p className="text-red-500">{error}</p>}
         </div>
     );
 };

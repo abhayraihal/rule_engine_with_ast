@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Textarea } from '../textarea';
+import { Button } from '../button';
 
 const EvaluateRule = () => {
     const [ast, setAST] = useState('');
@@ -10,7 +12,6 @@ const EvaluateRule = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
-
         try {
             const response = await axios.post('http://localhost:5000/evaluate-rule', { "ast": JSON.parse(ast), "data": JSON.parse(data) });
             setResult(response.data.result);
@@ -23,25 +24,24 @@ const EvaluateRule = () => {
         <div>
             <h2>Evaluate Rule</h2>
             <form onSubmit={handleSubmit}>
-                <textarea
+                <Textarea
                     placeholder="Paste AST here"
                     value={ast}
                     onChange={(e) => setAST(e.target.value)}
                     required
-                ></textarea>
+                ></Textarea>
 
-                <textarea
+                <Textarea
                     placeholder="Enter JSON data"
                     value={data}
                     onChange={(e) => setData(e.target.value)}
                     required
-                ></textarea>
+                ></Textarea>
 
-                <button type="submit">Evaluate</button>
+                <Button type="submit">Evaluate</Button>
             </form>
-
             {result !== null && <p>Result: {result.toString()}</p>}
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {error && <p className="text-red-500">{error}</p>}
         </div>
     );
 };
