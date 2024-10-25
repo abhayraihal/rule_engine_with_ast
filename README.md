@@ -54,10 +54,43 @@ When evaluating a rule, the computation starts from the leaf nodes, moves up to 
 You can check out a rough sketch of the AST structure in the attached image within the GitHub repo: 
 ![AST sketch](ast.jpg)
 
-## 🌟 Potential Enhancements
-- Display the AST in a more visually appealing way 🌈
-- Use toast components for error handling and better user feedback 🍞
-- Improve the UI for showing query results and errors 🚀
+## 🚧 Known Issues and Enhancements 🚀
+
+### 1. **Optimization of AST Tree** 🌲
+   - The current Abstract Syntax Tree (AST) structure is functional but **not optimized for performance**. Improving the AST could significantly enhance the parsing and evaluation speed for complex conditions.
+
+### 2. **Supported Operators ⚙️**
+   - The system **currently supports** only the following operators:
+     - `<`, `>`, `=`
+     - Logical operators: `AND` and `OR` (in capital letters only)
+   
+   - **Unsupported Operators** 🚫:
+     - The following operators are **not supported** in the current version:
+       - `>=`, `<=`, `!=`, `NOT`, `XOR`, `and`, `or` (in lowercase)
+     - If these operators are essential for your rules, be aware they will not be recognized or processed at this time.
+
+### 3. **User Data Format Requirement 📋**
+   - To ensure successful rule evaluation, provide **user data in JSON format with keys wrapped in single quotes**:
+     - ✅ Correct format:
+       ```json
+       { 'age': 5 }
+       ```
+     - ❌ Incorrect format:
+       ```json
+       { age: 5 }
+       ```
+   - Using the correct format is essential to avoid parsing errors.
+
+### Future Enhancements ✨
+   - Once the foundational logic is more robust, this project can be extended to support:
+     - A wider array of operators and logical expressions.
+     - Improved error handling and edge case management.
+     - Further optimization of the AST structure for better efficiency.
+     - Display the AST in a more visually appealing way 🌈
+     - Use toast components for error handling and better user feedback 🍞
+     - Improve the UI for showing query results and errors 🚀
+   
+This is a **functional, working prototype** 🎉 ready for testing and refinement in real-world scenarios.
 
 ## 🛠️ Technologies Used
 - **Frontend**: React, Vite, ShadCN, TailwindCSS
